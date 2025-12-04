@@ -8,9 +8,30 @@ class ChartManager {
     
     // Initialize all charts
     initializeCharts() {
+        // Check if Chart.js is available
+        if (typeof Chart === 'undefined') {
+            console.warn('Chart.js not loaded. Charts will not be displayed.');
+            this.displayChartPlaceholders();
+            return;
+        }
+        
         this.createSalesChart();
         this.createProductMixChart();
         this.createPeakHoursHeatmap();
+    }
+    
+    // Display placeholders when Chart.js is not available
+    displayChartPlaceholders() {
+        const salesChart = document.getElementById('salesChart');
+        const productMixChart = document.getElementById('productMixChart');
+        
+        if (salesChart && salesChart.parentElement) {
+            salesChart.parentElement.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 300px; color: var(--text-secondary); text-align: center;"><p>Gráfico de ventas<br/><small>Chart.js no disponible</small></p></div>';
+        }
+        
+        if (productMixChart && productMixChart.parentElement) {
+            productMixChart.parentElement.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 300px; color: var(--text-secondary); text-align: center;"><p>Gráfico de productos<br/><small>Chart.js no disponible</small></p></div>';
+        }
     }
     
     // Sales chart with filter support
@@ -243,6 +264,10 @@ class ChartManager {
     
     // Update sales chart with new filter
     updateSalesChart(filter) {
+        if (typeof Chart === 'undefined' || !this.charts.sales) {
+            return;
+        }
+        
         this.currentFilter = filter;
         const data = this.getSalesChartData(filter);
         
@@ -255,6 +280,10 @@ class ChartManager {
     
     // Update all charts for theme change
     updateChartsTheme() {
+        if (typeof Chart === 'undefined') {
+            return;
+        }
+        
         Object.values(this.charts).forEach(chart => {
             if (chart.options && chart.options.plugins && chart.options.plugins.legend) {
                 chart.options.plugins.legend.labels.color = getComputedStyle(document.documentElement)
